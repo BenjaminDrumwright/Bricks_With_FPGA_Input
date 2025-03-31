@@ -1,3 +1,5 @@
+Benjamin Drumwright
+
 rubric:
 
 1. Convolution Module (VHDL) Pts 8, correct implementation of sliding window, weight application, and summation
