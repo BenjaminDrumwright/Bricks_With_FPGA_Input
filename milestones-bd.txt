@@ -1,0 +1,78 @@
+rubric:
+
+1. Convolution Module (VHDL) Pts 8, correct implementation of sliding window, weight application, and summation
+2. ReLU activation module Pts 4, proper logic to zero negative values
+3. Fully connected layer module Pts 6, matrix vector multiply with bias, produces accurate classification logits
+4. UART Communication (FPGA side) Pts 4, takes in patch data from Pi and sends classification results back
+5. Raspberry Pi Image Script Pts 6, converts image, extracts patches and sends over UART
+6. System integration and testing Pts 8, all components function together correctly, and classification works
+Total Points /40
+
+Time Log:
+
+Reading Book "Free ranch VHDL" - total 8 hours 
+	03/16 1hr
+	03/17 1hr
+	03/20 2hr
+	03/21 1hr
+	03/23 3hr
+Raspberry Pi Image Script - 1.5 hours
+
+summary:
+
+This challenge has went fine so far. I have read a book on VHDL to get a solid foundation needed for this project, as well as did some
+mini projects to practice. Writing the code for the image to patch converter was not too bad. At first understanding how to handle images
+with OpenCV was pretty straightforward thanks to plenty of documentation. The challenging part was setting up the serial (UART) communication
+correctly. I had some trouble setting up the serial port settings and baud rate. Overall so far most of my troubles have come from debugging 
+so far. Also the fact im not too familiar with python did not help. However the most difficult part of the project is next with 
+setting up the neural network. This image to patch converter is just a requirment for input to the FPGA. 
+
+Github link:
+
+https://github.com/BenjaminDrumwright/Custom-VHDL-Neural-Network-for-Image-Recognition-on-FPGA
+
+My code:
+
+  import cv2
+  import serial
+  import time
+  import numpy as np
+
+  # config
+  IMAGE_PATH = 'image.jpg'  
+  PATCH_SIZE = 32 # can change later on
+  SERIAL_PORT = '/dev/ttyS0'
+  BAUD_RATE = 115200
+
+  # initialize serial
+  ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+  time.sleep(2)  # wait for serial connection
+
+  # loads and preprocesses image
+  image = cv2.imread(IMAGE_PATH) # uses cv2 to read image
+  gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # converts to greyscale
+
+  # resizes to 480p incase not already
+  gray = cv2.resize(gray, (640, 480))
+
+  # extract patches
+  height, width = gray.shape 
+  for y in range(0, height, PATCH_SIZE):
+      for x in range(0, width, PATCH_SIZE):
+          patch = gray[y:y+PATCH_SIZE, x:x+PATCH_SIZE]
+          if patch.shape != (PATCH_SIZE, PATCH_SIZE):
+              continue  # skip incomplete patches
+
+          # flatten the patch to send over UART
+          flat_patch = patch.flatten()
+          for pixel in flat_patch:
+              ser.write(bytes([pixel]))  # send pixel as byte
+              time.sleep(0.001)  # small delay (tune if needed)
+
+          # optionally wait for prediction
+          prediction = ser.readline().decode().strip()
+          print(f"Patch ({x},{y}) → Prediction: {prediction}")
+
+  ser.close()
+
+
