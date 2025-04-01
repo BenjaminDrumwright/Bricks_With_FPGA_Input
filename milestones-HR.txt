@@ -28,7 +28,8 @@ Github link:
 
 https://github.com/BenjaminDrumwright/Custom-VHDL-Neural-Network-for-Image-Recognition-on-FPGA
 
-My code:
+My code :
+fpgaUART.vhd
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
