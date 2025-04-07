@@ -2,27 +2,28 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.Numeric_STD.ALL;
+use work.cnn_types.all;
 
 entity cnn_top is
     Port(
         clk     : in std_logic;
-        pixel_in   : in std_logic_vector(7 downto 0);
-        output  : out std_logic_vector(7 downto 0)
+        patch_in   : in patch_type;
+        output  : out std_logic_vector(8191 downto 0)
     );
 end cnn_top;
 
 architecture Structual of cnn_top is
-    signal conv1_out, relu1_out : std_logic_vector(7 downto 0);
-    signal conv2_out, relu2_out : std_logic_vector(7 downto 0);
-    signal conv3_out, relu3_out : std_logic_vector(7 downto 0);
-    signal flatten_out          : std_logic_vector(7 downto 0); -- adjust width as needed
+    signal conv1_out, relu1_out : patch_type;
+    signal conv2_out, relu2_out : patch_type;
+    signal conv3_out, relu3_out : patch_type;
+    signal flatten_out          : std_logic_vector(8191 downto 0);
 begin
 
 -- hidden layer 1
 Conv1: entity work.conv_layer
     port map (
         clk => clk,
-        input => pixel_in,
+        input => patch_in,
         output => conv1_out
     ); 
     

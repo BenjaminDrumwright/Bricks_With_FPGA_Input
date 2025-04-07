@@ -18,15 +18,16 @@ begin
         variable temp : signed(7 downto 0);
         
     begin 
-        for i in 0 to 31 loop -- nested loop to iterate through patch
-            for j in 0 to 31 loop
-                temp := signed(input(i, j)); -- type cast input from 8bit to signed int
-                if temp < 0 then     
-                    output(i, j) <= (others => '0'); -- output at that pixel is set to 0 if it negative
-                else  
-                    output(i, j) <= std_logic_vector(temp); -- keeps number the same if its positive
+         -- Generate blocks to handle each element in the patch
+        gen_relay: for i in 0 to 31 generate
+            for j in 0 to 31 generate
+                temp := signed(input(i, j));  -- Type cast input from 8-bit to signed integer
+                if temp < 0 then
+                    output(i, j) <= (others => '0');  -- Set to 0 if negative
+                else
+                    output(i, j) <= std_logic_vector(temp);  -- Keep the number the same if positive
                 end if;
-            end loop;
-        end loop;
+            end generate;
+        end generate
     end process;
 end Behavioral;
