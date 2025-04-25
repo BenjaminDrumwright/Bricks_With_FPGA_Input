@@ -12,20 +12,10 @@ entity flatten is
 end flatten;
 
 architecture Behavioral of flatten is
-
-	signal flatten_out : std_logic_vector(8191 downto 0) := (others=>'0');
-
 begin
-
-process(input)
-begin
-  for i in 0 to 31 loop
-    for j in 0 to 31 loop
-		  flatten_out((i * 32 + j) * 8 + 7 downto (i * 32 + j) * 8) <= input(i)(j);
-    end loop;
-  end loop;
-end process;
-
-output <= flatten_out;
-
+  gen_flatten: for i in 0 to 31 generate
+    gen_inner: for j in 0 to 31 generate
+      output((i * 32 + j) * 8 + 7 downto (i * 32 + j) * 8) <= input(i,j);
+    end generate;
+  end generate;
 end Behavioral;
