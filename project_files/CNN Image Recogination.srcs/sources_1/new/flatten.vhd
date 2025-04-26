@@ -5,8 +5,7 @@ use work.cnn_types.all;
 
 entity flatten is
 	Port ( 
-		clk : in std_logic;
-		input : in patch_type;
+		input  : in patch_type;
 		output : out std_logic_vector(8191 downto 0)
 	);
 end flatten;

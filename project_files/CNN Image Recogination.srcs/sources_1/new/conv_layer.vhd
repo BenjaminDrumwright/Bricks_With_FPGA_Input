@@ -6,9 +6,12 @@ use work.cnn_types.all; -- to use patch layer
 
 entity conv_layer is
   Port (
-    clk : in std_logic; 
-    patch_in : in patch_type;
-    feature : out patch_type
+    clk		 : in std_logic; 
+    rst		 : in std_logic;
+	start    : in std_logic;
+	patch_in : in patch_type;
+    feature  : out patch_type;
+	done	 : out std_logic
    );
 end conv_layer;
 
@@ -22,7 +25,8 @@ architecture Behavioral of conv_layer is
         (to_signed(1, 8), to_signed(0, 8), to_signed(-1, 8))
     );
 
-    signal temp_result : patch_type := (others => (others => (others => '0'))); --creates a blank 32x32 vector of '0'
+	signal temp_result : patch_type;
+	signal done_reg    : std_logic;
 
     function conv_at(patch : patch_type; x, y : integer) return std_logic_vector is
         variable sum : signed(15 downto 0) := (others => '0');
@@ -40,13 +44,22 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then --every rising edge it runs the kernal over next grid of bits
-            for i in 1 to 30 loop
-                for j in 1 to 30 loop
-                    temp_result(i, j) <= conv_at(patch_in, i, j);
-                end loop;
-            end loop;
-            feature <= temp_result;
+            if rst = '1' then
+				temp_result <= (others => (others => (others => '0')))
+				done_reg <= '0';
+			elsif start = '1' then
+				for i in 1 to 30 loop
+					for j in 1 to 30 loop
+						temp_result(i, j) <= conv_at(patch_in, i, j);
+					end loop;
+				end loop;
+				done_reg <= '1';
+			else
+				done_reg <= '0';
+			end if;
         end if;
     end process;
+	feature <= temp_result;
+	done    <= done_reg;
 
 end Behavioral;

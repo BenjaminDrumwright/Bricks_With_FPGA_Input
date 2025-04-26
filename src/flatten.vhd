@@ -32,7 +32,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity flatten is
---  Port ( );
+	Port ( 
+		
+	
+	);
 end flatten;
 
 architecture Behavioral of flatten is
