@@ -1,0 +1,15 @@
+0.7
+2020.2
+Nov 18 2020
+09:47:47
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sim_1/new/tb_2.vhd,1746281696,vhdl,,,,tb_cnn_top,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,1746280579,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sim_1/new/tb_2.vhd,,,cnn_top,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_types.vhd,1746140807,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd;C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_weights.vhd;C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/conv_layer.vhd;C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/fc_layer.vhd;C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/flatten.vhd;C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/patch_loader.vhd;C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/relu.vhd,,,cnn_types,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_weights.vhd,1746140807,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,cnn_weights,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/conv_layer.vhd,1746280477,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,conv_layer,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/fc_layer.vhd,1746280787,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,fc_layer,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/flatten.vhd,1746140808,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,flatten,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/patch_loader.vhd,1746280522,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,patch_loader,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/relu.vhd,1746280501,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,relu,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/uart_rx.vhd,1746280617,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,uart_rx,,,,,,,,
+C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/uart_tx.vhd,1746280638,vhdl,C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sources_1/imports/new/cnn_top.vhd,,,uart_tx,,,,,,,,

@@ -1,0 +1,15 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../final_proj1.srcs/sources_1/imports/new/cnn_types.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/cnn_weights.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/uart_rx.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/patch_loader.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/conv_layer.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/relu.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/flatten.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/fc_layer.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/uart_tx.vhd" \
+"../../../../final_proj1.srcs/sources_1/imports/new/cnn_top.vhd" \
+
+# Do not sort compile order
+nosort

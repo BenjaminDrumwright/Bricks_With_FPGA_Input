@@ -1,0 +1,4 @@
+Vivado Simulator 2020.2
+Time resolution is 1 ps
+Note: Simulation complete: check TX waveform for class output
+Time: 102777971520 ps  Iteration: 0  Process: /tb_cnn_top/stim_proc  File: C:/Users/HCRea/Vivado_Proj/final_proj1/final_proj1.srcs/sim_1/new/tb_2.vhd
