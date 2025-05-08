@@ -7,36 +7,38 @@ import random
 
 pygame.init()
 
-fpga_serial = serial.Serial('COM4', 115200, timeout=0.01)  # Change COM port if needed
+# Setup serial communication
+fpga_serial = serial.Serial('COM4', 115200, timeout=0.01)
 
+# Screen setup
 WIDTH, HEIGHT = 800, 600
 FPS = 60
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GREEN = (0, 255, 0)
-RED = (255, 60, 60)
+WHITE, BLACK = (255, 255, 255), (0, 0, 0)
+GREEN, RED = (0, 255, 0), (255, 60, 60)
 SHAKE_DURATION = 10
 
+# Function to play a beep sound in a new thread
 def beep():
     threading.Thread(target=lambda: winsound.Beep(1000, 100)).start()
 
+# Initialize screen, clock and fonts
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Bricks Deluxe")
 clock = pygame.time.Clock()
-
 font = pygame.font.SysFont("consolas", 30)
 big_font = pygame.font.SysFont("consolas", 70)
 
+# Game state variables
 player_name = ""
 scoreboard = []
-
 paddle = pygame.Rect(WIDTH // 2 - 60, HEIGHT - 30, 120, 15)
 ball = pygame.Rect(WIDTH // 2 - 10, HEIGHT // 2, 20, 20)
 ball_speed = [4, -4]
 multi_balls = []
 reverse_controls = False
-
 powerups = []
+
+# Define powerup types and colors
 POWER_TYPES = {
     'expand': GREEN,
     'multi': GREEN,
@@ -44,8 +46,10 @@ POWER_TYPES = {
     'reverse': RED
 }
 
+# Brick colors
 BRICK_COLORS = [(255, 99, 71), (255, 140, 0), (255, 215, 0), (50, 205, 50), (0, 191, 255)]
 
+# Create a grid of bricks
 def create_bricks(rows, cols):
     bricks = []
     bw, bh = WIDTH // cols, 30
@@ -56,44 +60,39 @@ def create_bricks(rows, cols):
             bricks.append((brick, BRICK_COLORS[r % len(BRICK_COLORS)], typ, 255))
     return bricks
 
+# text on screen
 def draw_text(text, font, color, surface, x, y, center=True):
     render = font.render(text, True, color)
-    rect = render.get_rect()
-    if center:
-        rect.center = (x, y)
-    else:
+    rect = render.get_rect(center=(x, y) if center else None)
+    if not center:
         rect.topleft = (x, y)
     surface.blit(render, rect)
 
+# 3-letter name entry using FPGA button input
 def name_entry():
     global player_name
     player_name = ""
     current_index = 0
     alphabet = [chr(i) for i in range(65, 91)]  # A-Z
     entering = True
-    selected_count = 0
-    waiting_for_play = False
 
     while entering:
         screen.fill(BLACK)
         draw_text("Enter Your Name", font, WHITE, screen, WIDTH//2, HEIGHT//2 - 100)
 
-        display_name = ""
-        for i in range(3):
-            if i < len(player_name):
-                display_name += player_name[i]
-            elif i == len(player_name):
-                display_name += alphabet[current_index]
-            else:
-                display_name += "_"
+        display_name = "".join(
+            player_name[i] if i < len(player_name) else 
+            (alphabet[current_index] if i == len(player_name) else "_")
+            for i in range(3)
+        )
 
         draw_text(display_name, big_font, WHITE, screen, WIDTH//2, HEIGHT//2)
-
         if len(player_name) == 3:
             draw_text("Press Play", font, GREEN, screen, WIDTH//2, HEIGHT//2 + 100)
 
         pygame.display.flip()
 
+        # Read FPGA button commands
         while fpga_serial.in_waiting:
             cmd = fpga_serial.read().decode('utf-8', errors='ignore')
             if cmd == 'U' and len(player_name) < 3:
@@ -103,15 +102,16 @@ def name_entry():
             elif cmd == 'S':
                 if len(player_name) < 3:
                     player_name += alphabet[current_index]
-                    current_index = 0  # Reset for next slot
+                    current_index = 0
                 elif len(player_name) == 3:
-                    entering = False  # Final 'S' starts the game
+                    entering = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
+# Display the scoreboard
 def show_scoreboard():
     screen.fill(BLACK)
     draw_text("SCOREBOARD", big_font, WHITE, screen, WIDTH//2, 80)
@@ -121,6 +121,7 @@ def show_scoreboard():
     draw_text("Press Start to play again", font, WHITE, screen, WIDTH//2, HEIGHT - 60)
     pygame.display.flip()
 
+    # Wait for restart input
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -129,21 +130,21 @@ def show_scoreboard():
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 waiting = False
-
         while fpga_serial.in_waiting:
-            cmd = fpga_serial.read().decode('utf-8', errors='ignore')
-            if cmd == 'S':
+            if fpga_serial.read().decode('utf-8', errors='ignore') == 'S':
                 waiting = False
 
-score = 0
-level = 1
-max_levels = 5
+# Game variables
+score, level, max_levels = 0, 1, 5
 bricks = create_bricks(3, 10)
 ball_moving = False
 game_active = False
 shake_timer = 0
 
+# Start with name entry and game reset
 name_entry()
+
+# Define function to reset game state
 reset_game = lambda: (
     paddle.__setattr__('width', 120),
     paddle.__setattr__('x', WIDTH // 2 - 60),
@@ -163,13 +164,17 @@ reset_game = lambda: (
 reset_game()
 paddle_direction = 0  # -1 = left, 1 = right
 
+# Main game loop
 while True:
     clock.tick(FPS)
     screen.fill((30, 30, 30))
+
+    # Screen shake effect
     shake_offset = (random.randint(-5, 5), random.randint(-5, 5)) if shake_timer > 0 else (0, 0)
     if shake_timer > 0:
         shake_timer -= 1
 
+    # Handle FPGA input
     while fpga_serial.in_waiting:
         cmd = fpga_serial.read().decode('utf-8', errors='ignore')
         if cmd == 'L':
@@ -179,24 +184,26 @@ while True:
         elif cmd == 'S':
             ball_moving = True
 
+    # Update paddle position
     if paddle_direction == -1:
         paddle.x -= 7
     elif paddle_direction == 1:
         paddle.x += 7
     paddle.x = max(0, min(WIDTH - paddle.width, paddle.x))
 
+    # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
-                score = 0
-                level = 1
+                score, level = 0, 1
                 scoreboard.clear()
                 name_entry()
                 reset_game()
 
+    # Show scoreboard if game over
     if not game_active:
         scoreboard.append((player_name, score))
         show_scoreboard()
@@ -205,6 +212,7 @@ while True:
         reset_game()
         continue
 
+    # Move ball
     if ball_moving:
         ball.x += ball_speed[0]
         ball.y += ball_speed[1]
@@ -212,6 +220,7 @@ while True:
         mb[0].x += mb[1][0]
         mb[0].y += mb[1][1]
 
+    # collision detection
     to_remove = []
     for b, speed in [(ball, ball_speed)] + multi_balls:
         if b.left <= 0 or b.right >= WIDTH:
@@ -235,6 +244,7 @@ while True:
     if len(multi_balls) == 0 and ball.y > HEIGHT:
         game_active = False
 
+    # Handle brick collisions
     for b, speed in [(ball, ball_speed)] + multi_balls:
         for i, (brick, color, btype, alpha) in enumerate(bricks):
             if b.colliderect(brick):
@@ -249,6 +259,7 @@ while True:
                     shake_timer = SHAKE_DURATION
                 break
 
+    # Handle powerup collection
     for p in powerups[:]:
         p[0].y += 3
         if p[0].colliderect(paddle):
@@ -264,6 +275,7 @@ while True:
             beep()
             powerups.remove(p)
 
+    # Drawing
     pygame.draw.rect(screen, WHITE, paddle.move(shake_offset))
     pygame.draw.ellipse(screen, WHITE, ball.move(shake_offset))
     for mb in multi_balls:
@@ -275,10 +287,12 @@ while True:
     for p in powerups:
         pygame.draw.rect(screen, p[2], p[0].move(shake_offset))
 
+    # Display score info
     draw_text(f"Score: {score}", font, WHITE, screen, 20, 20, center=False)
     draw_text(f"Balls: {1 + len(multi_balls)}", font, WHITE, screen, 20, 60, center=False)
     draw_text(f"Level: {level}", font, WHITE, screen, WIDTH - 150, 20, center=False)
 
+    # Advance to next level
     if not bricks:
         pygame.display.flip()
         pygame.time.delay(1500)
@@ -289,4 +303,3 @@ while True:
             reset_game()
 
     pygame.display.flip()
-
