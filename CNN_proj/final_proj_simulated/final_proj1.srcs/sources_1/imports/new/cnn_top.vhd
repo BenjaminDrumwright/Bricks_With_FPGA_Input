@@ -1,4 +1,7 @@
 -- cnn_top.vhd
+-- Receives image data over UART, processes through conv, relu, flatten,
+-- and fully connected layers, then transmits classification result via UART.
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use work.cnn_types.ALL;
@@ -8,24 +11,24 @@ entity cnn_top is
     Port (
         clk  : in  std_logic;
         rst  : in  std_logic;
-        rx   : in  std_logic;
-        tx   : out std_logic
+        rx   : in  std_logic; -- recieving from uart
+        tx   : out std_logic -- sending to uart
     );
 end cnn_top;
 
 architecture Structural of cnn_top is
     -- pipeline data
-    signal patch_in     : patch_type;
-    signal conv_out     : patch_type;
-    signal relu_out     : patch_type;
-    signal flat_out     : flat_type;
-    signal class_out    : std_logic_vector(4 downto 0);
+    signal patch_in     : patch_type;                -- structured patch input
+    signal conv_out     : patch_type;                -- output of convolution layer
+    signal relu_out     : patch_type;                -- output of ReLU layer
+    signal flat_out     : flat_type;                 -- flattened ReLU output
+    signal class_out    : std_logic_vector(4 downto 0); -- predicted class index
 
     -- handshakes
-    signal patch_ready, patch_consumed : std_logic;
-    signal conv_start, conv_done       : std_logic;
-    signal relu_start, relu_done       : std_logic;
-    signal fc_start,   fc_done         : std_logic;
+    signal patch_ready, patch_consumed : std_logic;  -- loader <-> FSM handshake
+    signal conv_start, conv_done       : std_logic;  -- FSM <-> conv
+    signal relu_start, relu_done       : std_logic;  -- FSM <-> relu
+    signal fc_start,   fc_done         : std_logic;  -- FSM <-> fc
 
     -- UART I/O
     signal rx_data   : std_logic_vector(7 downto 0);
@@ -36,13 +39,13 @@ architecture Structural of cnn_top is
 
     -- FSM
     type state_t is (
-        IDLE,
-        LOAD,
-        CONV,
-        RELU,
-        FLAT,
-        FC,
-        SEND
+        IDLE,   -- wait for patch
+        LOAD,   -- unused
+        CONV,   -- start conv
+        RELU,   -- start relu
+        FLAT,   -- flatten (implicit)
+        FC,     -- start FC layer
+        SEND    -- send class result
     );
     signal state : state_t := IDLE;
 begin
@@ -97,7 +100,7 @@ begin
             case state is
                 when IDLE =>
                     if patch_ready = '1' then
-                        patch_consumed <= '1';
+                        patch_consumed <= '1';  -- acknowledge patch and begin pipeline
                         conv_start     <= '1';
                         state          <= CONV;
                     end if;
@@ -110,21 +113,20 @@ begin
 
                 when RELU =>
                     if relu_done = '1' then
-                        -- flatten is free-running
-                        fc_start <= '1';
+                        fc_start <= '1';  -- flatten is implicit
                         state    <= FC;
                     end if;
 
                 when FC =>
                     if fc_done = '1' then
-                        tx_data  <= (2 downto 0 => '0') & class_out;
+                        tx_data  <= (2 downto 0 => '0') & class_out; -- zero-pad to byte
                         tx_start <= '1';
                         state    <= SEND;
                     end if;
 
                 when SEND =>
                     if tx_busy = '0' then
-                        state <= IDLE;
+                        state <= IDLE;  -- ready for next patch
                     end if;
 
                 when others =>
