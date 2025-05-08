@@ -1,3 +1,7 @@
+-- cnn_weights.vhd
+-- Contains the constant weight and bias values for the fully
+-- connected layer of the CNN. These are used during inference to compute
+-- the final classification output. Generated using pytorch.
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use work.cnn_types.ALL;
