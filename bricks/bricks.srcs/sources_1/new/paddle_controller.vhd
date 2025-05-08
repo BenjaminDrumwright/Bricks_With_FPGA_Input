@@ -13,7 +13,7 @@ entity paddle_controller is
         btnC    : in  std_logic; -- Center button
         btnT    : in  std_logic; -- Top button
         btnB    : in  std_logic; -- Bottom button
-        uart_tx : out std_logic  -- 0 when uart is busy, 1 when ready
+        uart_tx : out std_logic  -- bit being sent over uart
     );
 end paddle_controller;
 
