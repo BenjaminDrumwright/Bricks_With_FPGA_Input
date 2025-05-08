@@ -1,3 +1,6 @@
+-- cnn_types.vhd
+-- Defines common data types used throughout the CNN pipeline, including pixel format, 2D image patches, 
+-- flattened vectors, and fully connected layer weights and biases.
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
